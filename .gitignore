@@ -2,6 +2,10 @@
 #
 .DS_Store
 
+# ENV
+#
+.env
+
 # Xcode
 #
 build/
@@ -32,7 +36,7 @@ local.properties
 *.hprof
 .cxx/
 *.keystore
-!debug.keystore
+# !debug.keystore
 
 # node.js
 #

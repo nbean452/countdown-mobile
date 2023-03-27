@@ -1,0 +1,96 @@
+{
+  "globals": {
+    "JSX": "readonly",
+    "React": "readonly",
+    "KeyboardEventInit": "readonly"
+  },
+  "extends": [
+    "eslint:recommended",
+    "@react-native-community",
+    "airbnb",
+    "plugin:eqeqeq-fix/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    }
+  },
+  "plugins": ["sort-keys", "import"],
+  "rules": {
+    // "prettier/prettier": [
+    //   "error",
+    //   {
+    //     "semi": false
+    //   }
+    // ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": true,
+        "ignorePropertyModificationsFor": ["state"]
+      }
+    ],
+    "import/order": [
+      "warn",
+      {
+        "groups": ["builtin", "external", "internal"],
+        "pathGroups": [
+          {
+            "pattern": "{react,react-dom/**}",
+            "group": "external",
+            "position": "before"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["react"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
+    "import/no-unresolved": "error",
+    "react/function-component-definition": [
+      "warn",
+      { "namedComponents": "arrow-function" }
+    ],
+
+    "quotes": [1, "double", { "avoidEscape": true }],
+    "no-shadow": "off",
+    "react/jsx-filename-extension": ["warn", { "extensions": [".tsx"] }],
+    "react/jsx-key": "error",
+    "react/jsx-one-expression-per-line": ["off", { "allow": "literal" }],
+    "react/jsx-props-no-spreading": "off",
+    "sort-vars": "warn",
+    "react/jsx-sort-props": [
+      "warn",
+      {
+        "callbacksLast": true,
+        "shorthandFirst": false,
+        "shorthandLast": true,
+        "ignoreCase": true,
+        "noSortAlphabetically": false
+      }
+    ],
+    "sort-keys": "off",
+    "sort-keys/sort-keys-fix": "warn",
+    "react/no-array-index-key": "warn",
+    "import/extensions": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "implicit-arrow-linebreak": "off",
+    "react/prop-types": "off",
+    "function-paren-newline": "off",
+    "operator-linebreak": "off",
+    "react/jsx-curly-newline": "off",
+    "object-curly-newline": "off",
+    "indent": "off"
+  }
+}

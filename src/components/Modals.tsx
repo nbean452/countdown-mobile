@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import camelcaseKeys from "camelcase-keys";
 import dayjs from "dayjs";
@@ -14,8 +14,9 @@ import { Modal, Text, Button, FAB, TextInput } from "react-native-paper";
 import { DatePickerInput } from "react-native-paper-dates";
 import uuid from "react-native-uuid";
 
+import Snackbar from "./Snackbar";
 import { Container } from "./StyledComponents";
-import { setCountdowns, setCurrentCountdown } from "../redux/countdownSlice";
+import { setCountdowns } from "../redux/countdownSlice";
 import { setModal } from "../redux/modalSlice";
 import client from "../utils/client";
 import { useDispatch, useSelector } from "../utils/hooks";
@@ -37,6 +38,9 @@ const Modals = () => {
   const [newCountdownEndDate, setNewCountdownEndDate] = useState<string>(
     dayjs(new Date()).endOf("day").toISOString(),
   );
+
+  const [editCountdownName, setEditCountdownName] = useState<string>("");
+  const [editCountdownEndDate, setEditCountdownEndDate] = useState<string>("");
 
   const FABStyle: any = {
     bottom: 75,
@@ -65,6 +69,11 @@ const Modals = () => {
   const setHideDeleteModal = () => {
     dispatch(setModal({ delete: false }));
   };
+
+  useEffect(() => {
+    setEditCountdownEndDate(currentCountdown.endDate);
+    setEditCountdownName(currentCountdown.name);
+  }, [currentCountdown]);
 
   return (
     <>
@@ -133,7 +142,8 @@ const Modals = () => {
                       .from("hourglass")
                       .insert(result);
 
-                    if (error) console.error(error);
+                    if (error) Snackbar({ text: error.message });
+                    else Snackbar({ text: `Added "${result.name}"` });
                   }}
                 >
                   Confirm Add
@@ -157,24 +167,17 @@ const Modals = () => {
               <Text variant="titleMedium">{`Edit "${currentCountdown.name}"`}</Text>
               <TextInput
                 label="Countdown Name"
-                value={currentCountdown.name}
-                onChange={(e) =>
-                  dispatch(setCurrentCountdown({ name: e.nativeEvent.text }))
-                }
-                // onChangeText={(text) => setText(text)}
+                value={editCountdownName}
+                onChange={(e) => setEditCountdownName(e.nativeEvent.text)}
               />
               <View style={{ maxHeight: vh(10) }}>
                 <DatePickerInput
                   inputMode="start"
                   label="Countdown date"
                   locale="en"
-                  value={new Date(currentCountdown.endDate)}
+                  value={new Date(editCountdownEndDate)}
                   onChange={(d) =>
-                    dispatch(
-                      setCurrentCountdown({
-                        endDate: dayjs(d).endOf("day").toISOString(),
-                      }),
-                    )
+                    setEditCountdownEndDate(dayjs(d).endOf("day").toISOString())
                   }
                 />
               </View>
@@ -185,19 +188,23 @@ const Modals = () => {
                 }}
               >
                 <Button
+                  disabled={
+                    currentCountdown.name === editCountdownName &&
+                    currentCountdown.endDate === editCountdownEndDate
+                  }
                   onPress={async () => {
                     const result: CountdownPropsSnakeCase = {
                       created_by: currentCountdown.createdBy,
-                      end_date: currentCountdown.endDate,
+                      end_date: editCountdownEndDate,
                       id: currentCountdown.id,
-                      name: currentCountdown.name,
+                      name: editCountdownName,
                     };
 
                     const newCountdowns = countdown.countdowns
                       // modify current countdown
                       .map((item) =>
                         item.id === currentCountdown.id
-                          ? currentCountdown
+                          ? camelcaseKeys(result, { deep: true })
                           : item,
                       )
                       // then sort the countdowns based on new ending date
@@ -211,7 +218,11 @@ const Modals = () => {
                       .update(result)
                       .eq("id", currentCountdown.id);
 
-                    if (error) console.error(error);
+                    if (error) Snackbar({ text: error.message });
+                    else
+                      Snackbar({
+                        text: `Edited "${result.name}"`,
+                      });
                   }}
                 >
                   Confirm Edit
@@ -246,7 +257,8 @@ const Modals = () => {
                 .delete()
                 .eq("id", currentCountdown.id);
 
-              if (error) console.error(error);
+              if (error) Snackbar({ text: error.message });
+              else Snackbar({ text: `Deleted "${currentCountdown.name}"` });
             }}
           >
             Delete

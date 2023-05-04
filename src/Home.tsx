@@ -12,6 +12,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import { Text } from "react-native-paper";
 
 import CountdownTimer from "./components/CountdownTimer";
+import Snackbar from "./components/Snackbar";
 import { Container } from "./components/StyledComponents";
 import { setCountdowns } from "./redux/countdownSlice";
 import { clearModal } from "./redux/modalSlice";
@@ -50,7 +51,7 @@ const Home = () => {
       );
       dispatch(setCountdowns(camelcaseCountdowns));
     } catch (e) {
-      console.error(e);
+      Snackbar({ text: e as string });
     }
   };
 
@@ -75,10 +76,13 @@ const Home = () => {
             onRefresh={() => {
               setRefreshing(true);
               getCountdowns();
+              Snackbar({ text: "Refreshed" });
               setRefreshing(false);
             }}
           />
         }
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
       >
         <Container isDarkMode={isDarkMode}>
           <Text style={{ textAlign: "center" }} variant="headlineLarge">
